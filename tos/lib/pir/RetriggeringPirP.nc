@@ -259,6 +259,7 @@ implementation {
 		post fired();
     }
 
+    default event void Read.readDone(error_t result, float value) { }
     default event void MovementStart.notify(float value) { }
     default event void MovementActive.notify(float value) { }
     default event void MovementEnd.notify(float value) { }
