@@ -38,6 +38,8 @@ implementation {
 
 	pir_state_t m_pir = { ST_DISABLED, FALSE, FALSE, FALSE};
 
+	uint32_t m_timestamp = 0;
+
 	float m_count = 0;
 
 	task void readDone()
@@ -53,7 +55,7 @@ implementation {
 
 	/**
 	 * Enable rising edge, if event starts with rising edge and start detection is requested.
-	 * Enable falling edge, if enet starts with falling edge and start detection is requested.
+	 * Enable falling edge, if evnet starts with falling edge and start detection is requested.
 	 * @param start - request start detection
 	 */
 	void enable(bool start)
@@ -230,6 +232,7 @@ implementation {
 		{
 			case ST_WAITING_START:
 				m_count++;
+				m_timestamp = call Timer.getNow();
 				info1("start %"PRIu32, (uint32_t)m_count);
 				m_pir.state = ST_TIMEOUT;
 				if(m_pir.start)
@@ -239,7 +242,7 @@ implementation {
 				call Timer.startOneShot(g_timeout_ms);
 				break;
 			case ST_WAITING_END:
-				info1("end");
+				info1("end %"PRIu32, call Timer.getNow() - m_timestamp);
 				call Timer.stop();
 				if(m_pir.end)
 				{
