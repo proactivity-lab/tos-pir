@@ -196,14 +196,24 @@ implementation {
 			case ST_TIMEOUT:
 				if(call GeneralIO.get() == g_rising_edge)
 				{
-					debug1("w end");
-					m_pir.state = ST_WAITING_END;
-					enable(FALSE);
+					debug1("t wait end");
+					// Disabled the following lines because not looking for end interrupt
+					// m_pir.state = ST_WAITING_END;
+					// enable(FALSE);
+					if(call Timer.getNow() - m_timestamp >= g_retrigger_ms)
+					{
+						debug1("t retrig");
+						m_count++;
+						if(m_pir.active)
+						{
+							signal MovementActive.notify(m_count);
+						}
+					}
 					call Timer.startOneShot(g_retrigger_ms);
 				}
 				else
 				{
-					info1("end");
+					info1("t end %"PRIu32, call Timer.getNow() - m_timestamp);
 					if(m_pir.end)
 					{
 						signal MovementEnd.notify(m_count);
@@ -213,7 +223,8 @@ implementation {
 				}
 				break;
 			case ST_WAITING_END:
-				info1("active %"PRIu32, (uint32_t)m_count);
+				info1("t active %"PRIu32, (uint32_t)m_count);
+				m_count++;
 				if(m_pir.active)
 				{
 					signal MovementActive.notify(m_count);
@@ -233,7 +244,7 @@ implementation {
 			case ST_WAITING_START:
 				m_count++;
 				m_timestamp = call Timer.getNow();
-				info1("start %"PRIu32, (uint32_t)m_count);
+				info1("i start %"PRIu32, (uint32_t)m_count);
 				m_pir.state = ST_TIMEOUT;
 				if(m_pir.start)
 				{
@@ -242,7 +253,7 @@ implementation {
 				call Timer.startOneShot(g_timeout_ms);
 				break;
 			case ST_WAITING_END:
-				info1("end %"PRIu32, call Timer.getNow() - m_timestamp);
+				info1("i end %"PRIu32, call Timer.getNow() - m_timestamp);
 				call Timer.stop();
 				if(m_pir.end)
 				{
