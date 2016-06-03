@@ -1,7 +1,9 @@
 /**
  * PIR module. Fires separate events for start and end. Also fires an active
  * event periodically every g_retrigger_ms if motion event does not end.
+ *
  * @author Raido Pahtma
+ * @license ProLab
  */
 generic module RetriggeringPirP(bool g_pullup, bool g_rising_edge, uint32_t g_timeout_ms, uint32_t g_retrigger_ms) {
 	provides {
@@ -12,8 +14,8 @@ generic module RetriggeringPirP(bool g_pullup, bool g_rising_edge, uint32_t g_ti
 	}
 	uses {
 		interface GeneralIO;
-    	interface GpioInterrupt as Interrupt;
-    	interface Timer<TMilli>;
+		interface GpioInterrupt as Interrupt;
+		interface Timer<TMilli>;
 	}
 }
 implementation {
@@ -197,9 +199,8 @@ implementation {
 				if(call GeneralIO.get() == g_rising_edge)
 				{
 					debug1("t wait end");
-					// Disabled the following lines because not looking for end interrupt
-					// m_pir.state = ST_WAITING_END;
-					// enable(FALSE);
+					m_pir.state = ST_WAITING_END;
+					enable(FALSE);
 					if(call Timer.getNow() - m_timestamp >= g_retrigger_ms)
 					{
 						debug1("t retrig");
@@ -246,6 +247,7 @@ implementation {
 				m_timestamp = call Timer.getNow();
 				info1("i start %"PRIu32, (uint32_t)m_count);
 				m_pir.state = ST_TIMEOUT;
+				info1("input[1]");
 				if(m_pir.start)
 				{
 					signal MovementStart.notify(m_count);
@@ -255,6 +257,7 @@ implementation {
 			case ST_WAITING_END:
 				info1("i end %"PRIu32, call Timer.getNow() - m_timestamp);
 				call Timer.stop();
+				info1("input[0]");
 				if(m_pir.end)
 				{
 					signal MovementEnd.notify(m_count);
