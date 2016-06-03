@@ -21,7 +21,7 @@ generic module RetriggeringPirP(bool g_pullup, bool g_rising_edge, uint32_t g_ti
 implementation {
 
 	#define __MODUUL__ "rpir"
-	#define __LOG_LEVEL__ ( LOG_LEVEL_rpir & BASE_LOG_LEVEL )
+	#define __LOG_LEVEL__ ( LOG_LEVEL_RetriggeringPirP & BASE_LOG_LEVEL )
 	#include "log.h"
 
 	enum state {
@@ -214,7 +214,7 @@ implementation {
 				}
 				else
 				{
-					info1("t end %"PRIu32, call Timer.getNow() - m_timestamp);
+					info2("t end %"PRIu32, call Timer.getNow() - m_timestamp);
 					if(m_pir.end)
 					{
 						signal MovementEnd.notify(m_count);
@@ -224,7 +224,7 @@ implementation {
 				}
 				break;
 			case ST_WAITING_END:
-				info1("t active %"PRIu32, (uint32_t)m_count);
+				info2("t active %"PRIu32, (uint32_t)m_count);
 				m_count++;
 				if(m_pir.active)
 				{
@@ -245,7 +245,7 @@ implementation {
 			case ST_WAITING_START:
 				m_count++;
 				m_timestamp = call Timer.getNow();
-				info1("i start %"PRIu32, (uint32_t)m_count);
+				info2("i start %"PRIu32, (uint32_t)m_count);
 				m_pir.state = ST_TIMEOUT;
 				info1("input[1]");
 				if(m_pir.start)
@@ -255,7 +255,7 @@ implementation {
 				call Timer.startOneShot(g_timeout_ms);
 				break;
 			case ST_WAITING_END:
-				info1("i end %"PRIu32, call Timer.getNow() - m_timestamp);
+				info2("i end %"PRIu32, call Timer.getNow() - m_timestamp);
 				call Timer.stop();
 				info1("input[0]");
 				if(m_pir.end)
