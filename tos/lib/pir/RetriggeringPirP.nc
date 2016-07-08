@@ -3,7 +3,7 @@
  * event periodically every g_retrigger_ms if motion event does not end.
  *
  * @author Raido Pahtma
- * @license ProLab
+ * @license MIT
  */
 generic module RetriggeringPirP(bool g_pullup, bool g_rising_edge, uint32_t g_timeout_ms, uint32_t g_retrigger_ms) {
 	provides {

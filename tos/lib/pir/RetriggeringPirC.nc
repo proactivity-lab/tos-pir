@@ -2,7 +2,7 @@
  * RetriggeringPir configuration.
  *
  * @author Raido Pahtma
- * @license ProLab
+ * @license MIT
  */
 generic configuration RetriggeringPirC(bool pullup, bool rising_edge, uint32_t timeout_ms, uint32_t retrigger_ms) {
 	provides {
