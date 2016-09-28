@@ -13,7 +13,8 @@ generic module RetriggeringPirP(bool g_pullup, bool g_rising_edge, uint32_t g_ti
 		interface Notify<float> as MovementEnd;
 	}
 	uses {
-		interface GeneralIO;
+		interface GeneralIO as InterruptGPIO;
+		interface GeneralIO as PowerGPIO;
 		interface GpioInterrupt as Interrupt;
 		interface Timer<TMilli>;
 	}
@@ -103,14 +104,17 @@ implementation {
 			if(g_pullup)
 			{
 				debug1("set");
-				call GeneralIO.set();
+				call InterruptGPIO.set();
 			}
 			else
 			{
 				debug1("clr");
-				call GeneralIO.clr();
+				call InterruptGPIO.clr();
 			}
+			call PowerGPIO.makeOutput();
+			call PowerGPIO.set();
 			post enableTask();
+			// TODO wait for the PIR to actually start up
 		}
 	}
 
@@ -153,8 +157,11 @@ implementation {
 		{
 			m_pir.state = ST_DISABLED;
 			m_count = 0;
-			call Interrupt.disable();
 			call Timer.stop();
+			call Interrupt.disable();
+			call InterruptGPIO.clr();
+			call PowerGPIO.makeInput();
+			call PowerGPIO.clr();
 		}
 	}
 
@@ -196,7 +203,7 @@ implementation {
 		switch(m_pir.state)
 		{
 			case ST_TIMEOUT:
-				if(call GeneralIO.get() == g_rising_edge)
+				if(call InterruptGPIO.get() == g_rising_edge)
 				{
 					debug1("t wait end");
 					m_pir.state = ST_WAITING_END;

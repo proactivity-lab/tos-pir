@@ -13,6 +13,7 @@ generic configuration RetriggeringPirC(bool pullup, bool rising_edge, uint32_t t
 	}
 	uses {
 		interface GeneralIO as InterruptPin;
+		interface GeneralIO as PowerPin;
 		interface GpioInterrupt as Interrupt;
 	}
 }
@@ -25,7 +26,8 @@ implementation {
 	MovementActive = PIR.MovementActive;
 	MovementEnd = PIR.MovementEnd;
 
-	PIR.GeneralIO = InterruptPin;
+	PIR.PowerGPIO = PowerPin; // Wire to DummyGeneralIOC if not needed.
+	PIR.InterruptGPIO = InterruptPin;
 	PIR.Interrupt = Interrupt;
 
 	components new TimerMilliC();
