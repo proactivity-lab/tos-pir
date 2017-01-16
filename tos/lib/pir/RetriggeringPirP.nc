@@ -222,7 +222,7 @@ implementation {
 				else
 				{
 					info2("t end %"PRIu32, call Timer.getNow() - m_timestamp);
-					info1("input[0]");
+					info4("input[0]");
 					if(m_pir.end)
 					{
 						signal MovementEnd.notify(m_count);
@@ -254,7 +254,7 @@ implementation {
 				m_count++;
 				m_timestamp = call Timer.getNow();
 				info2("i start %"PRIu32, (uint32_t)m_count);
-				info1("input[1]");
+				info4("input[1]");
 				m_pir.state = ST_TIMEOUT;
 				if(m_pir.start)
 				{
@@ -264,7 +264,7 @@ implementation {
 				break;
 			case ST_WAITING_END:
 				info2("i end %"PRIu32, call Timer.getNow() - m_timestamp);
-				info1("input[0]");
+				info4("input[0]");
 				call Timer.stop();
 				if(m_pir.end)
 				{
